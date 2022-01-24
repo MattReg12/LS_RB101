@@ -1,0 +1,8 @@
+en:
+  welcome: 'Hello and welcome to Calculator!'
+  error: "That doesn't look quite right...please try again."
+
+es:
+  welcome: 'Bienvenidos a la calculadora! Entre su nombre:'
+  error: 'Asegúrese de entrar un nombre válido.'
+
