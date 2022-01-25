@@ -1,0 +1,7 @@
+welcome: 'Welcome to the loan calculator!'
+loan_amount: 'How much is the loan amount?'
+interest_rate: 'What is the interest rate?'
+remaining_term: 'How many more months do you have left on the loan?'
+payment_amount: 'Your monthly payment is %s'
+again?: 'Would you like to calculate another payment? Y or N '
+farewell: 'Thank you and have a nice day!'
