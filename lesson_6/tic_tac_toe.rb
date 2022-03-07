@@ -82,27 +82,27 @@ def board_full?(board_spaces)
 end
 
 def someone_won?(board_spaces)
-  combos = current_lines(board_spaces)
-  combos.any? { |combo| ['XXX', 'OOO'].include?(combo.join) }
+  lines = current_lines(board_spaces)
+  lines.any? { |line| ['XXX', 'OOO'].include?(line.join) }
 end
 
 def current_lines(board_spaces)
-  LINES.map do |combination|
-    combination.map { |index| board_spaces[index] }
+  LINES.map do |line|
+    line.map { |index| board_spaces[index] }
   end
 end
 
 def game_tied?(board_spaces)
-  combos = current_lines(board_spaces)
-  combos.none? { |combo| ['XXX', 'OOO'].include?(combo.join) }
+  lines = current_lines(board_spaces)
+  lines.none? { |line| ['XXX', 'OOO'].include?(line.join) }
 end
 
 def winning_marker(board_spaces)
   return nil if game_tied?(board_spaces)
 
-  combos = current_lines(board_spaces)
-  combos.each do |combo|
-    return combo.first if ['XXX', 'OOO'].include?(combo.join)
+  lines = current_lines(board_spaces)
+  lines.each do |line|
+    return line.first if ['XXX', 'OOO'].include?(line.join)
   end
 end
 

@@ -1,19 +1,19 @@
 def ai_choice(board_spaces, ai_marker, human_marker)
   lines = current_lines(board_spaces)
   choices = []
-  choices << ai_win(lines, ai_marker)
-  choices << ai_block_win(lines, human_marker)
-  choices << ai_fork(lines, ai_marker)
-  choices << ai_block_fork(lines, human_marker, ai_marker)
-  choices << mark_center(board_spaces)
-  choices << mark_opposite_corner(board_spaces, human_marker)
-  choices << mark_empty_corner(board_spaces)
-  choices << mark_empty_side(lines)
+  choices << win(lines, ai_marker)
+  choices << block_win(lines, human_marker)
+  choices << fork(lines, ai_marker)
+  choices << block_fork(lines, human_marker, ai_marker)
+  choices << center(board_spaces)
+  choices << opposite_corner(board_spaces, human_marker)
+  choices << empty_corner(board_spaces)
+  choices << empty_side(lines)
   choices.find { |item| item.is_a?(Integer) }
 end
 
 # 1) Win the game if possible.
-def ai_win(lines, ai_marker)
+def win(lines, ai_marker)
   winning_lines = lines.select do |line|
     line.count(ai_marker) == 2 && line.any? { |itm| itm.is_a?(Integer) }
   end
@@ -21,18 +21,18 @@ def ai_win(lines, ai_marker)
 end
 
 # 2) Block player from winning if necessary.
-def ai_block_win(lines, human_marker)
+def block_win(lines, human_marker)
   ai_win(lines, human_marker)
 end
 
 # 3) Make a fork if possible.
-def ai_fork(lines, ai_marker)
+def fork(lines, ai_marker)
   unblocked_lines = unblocked_lines(lines, ai_marker)
   fork_paths(unblocked_lines).sample
 end
 
 # 4) Block player from forking if possible.
-def ai_block_fork(lines, human_marker, ai_marker)
+def block_fork(lines, human_marker, ai_marker)
   unblocked_lines = unblocked_lines(lines, human_marker)
   forks = fork_paths(unblocked_lines)
   if forks.size == 1
@@ -70,12 +70,12 @@ def fork_paths(unblocked_lines)
 end
 
 # 5) Mark center if available.
-def mark_center(board_spaces)
+def center(board_spaces)
   4 if board_spaces[4].is_a?(Integer)
 end
 
 # 6) Mark opposite corner of player if steps 1-5 not applicable.
-def mark_opposite_corner(board_spaces, human_marker)
+def opposite_corner(board_spaces, human_marker)
   case
   when board_spaces[0] == human_marker && board_spaces[2] == 2 then 2
   when board_spaces[2] == human_marker && board_spaces[0] == 0 then 0
@@ -85,12 +85,12 @@ def mark_opposite_corner(board_spaces, human_marker)
 end
 
 # 7) Mark empty corner if steps 1-6 not applicable.
-def mark_empty_corner(board_spaces)
+def empty_corner(board_spaces)
   ([0, 2, 6, 8] & board_spaces).sample
 end
 
-# 8) Mark empty side if steps 1-7 not applicable.
-def mark_empty_side(lines)
+# 8) Mark middle of empty side if steps 1-7 not applicable.
+def empty_side(lines)
   empty_lines = lines & [LINES[0], LINES[2], LINES[3], LINES[5]]
   middle_squares = empty_lines.map { |side| side[1] }
   middle_squares.sample
