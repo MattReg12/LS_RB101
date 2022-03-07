@@ -1,1 +1,2 @@
 welcome: 'Welcome to twenty one! Thank you for playing.'
+hand_display: '%s has the %s for a total of %s.'
