@@ -1,2 +1,6 @@
 welcome: 'Welcome to twenty one! Thank you for playing.'
-hand_display: '%s has the %s for a total of %s.'
+dealing: 'Dealing cards in progres...'
+player: 'You have the %s for a total of %s.'
+dealer_before: 'Dealer shows the %s for a total of %s.'
+player_decision: 'Would you like to hit or stay?'
+invalid_decision: 'That doesnt seem right. Please enter:  Hit or Stay (H or S)'
