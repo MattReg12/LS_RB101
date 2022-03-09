@@ -44,16 +44,24 @@ def busted?(hand)
   value(hand) > 21
 end
 
-def player_turn(hand, deck)
+def turn(participant, hand, deck)
   loop do
-    decision = player_input
-    break if decision == 'stay'
-    deal_card(player_hand, deck)
-    break if busted?(hand)
+    display_hand(participant, hand)
+    decision = participant == 'Player' ? player_decision : dealer_decision(hand)
+    process(decision, hand)
+    break if decision == 'stay' || busted?(hand)
   end
 end
 
-def player_input
+def process(participant, decision, hand, deck)
+  prompt(MESSAGES['decision_commentary'] % [participant, decision])
+  if decision == 'hit'
+    deal_card(hand, deck)
+    prompt(MESSAGES['card_dealt'] % [participant, hand.last])
+  end
+end
+
+def player_decision
   loop do
     prompt(MESSAGES['player_decision'])
     decision = gets.chomp
@@ -63,7 +71,15 @@ def player_input
 end
 
 def decision_valid?(decision)
-  ['hit', 'stay', 'h', 's'].include?(decision.downcase)
+  ['hit', 'stay'].include?(decision.downcase)
+end
+
+def dealer_decision(hand)
+  value(hand) < 17 ? 'hit' : 'stay'
+end
+
+def winner(player_hand, dealer_hand)
+
 end
 
 
@@ -77,10 +93,12 @@ loop do
     prompt(MESSAGES['dealing'])
     deal_starting_hands(player_hand, dealer_hand, current_deck)
     sleep(3)
-
-    display_hand('dealer_before', [dealer_hand.first])
+    display_hand('dealer_one_card', [dealer_hand.first])
     display_hand('player', player_hand)
-    break
+
+    turn('Player', player_hand, current_deck)
+    break if busted?(player_hand)
+    turn('Dealer', dealer_hand, current_deck)
   end
   break
 end
