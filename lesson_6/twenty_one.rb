@@ -25,7 +25,7 @@ def deal_starting_hands(player_hand, dealer_hand, deck)
   2.times { deal_card(player_hand, deck) }
 end
 
-def display_hands(participant, hand)
+def display_hand(participant, hand)
   prompt(MESSAGES[participant] % [hand.join(' and '), value(hand)])
 end
 
@@ -48,7 +48,8 @@ def turn(participant, hand, deck)
   loop do
     display_hand(participant, hand)
     decision = participant == 'Player' ? player_decision : dealer_decision(hand)
-    process(decision, hand)
+    process(participant, decision, hand, deck)
+    sleep(3)
     break if decision == 'stay' || busted?(hand)
   end
 end
@@ -65,7 +66,7 @@ def player_decision
   loop do
     prompt(MESSAGES['player_decision'])
     decision = gets.chomp
-    break decision if decision_valid?
+    break decision if decision_valid?(decision)
     prompt(MESSAGES['invalid_decision'])
   end
 end
@@ -78,27 +79,39 @@ def dealer_decision(hand)
   value(hand) < 17 ? 'hit' : 'stay'
 end
 
-def winner(player_hand, dealer_hand)
-
+def winner(hands)
+  hands.map! { |hand| hand > 21 ? 0 : hand }
+  hands.first > hands.last ? 'Player' : 'Dealer'
 end
 
+def display_winner(participant)
+  if participant == 'Player'
+    prompt(MESSAGES['player_winner'])
+  else prompt(MESSAGES['dealer_winner'])
+  end
+end
 
 loop do
   prompt(MESSAGES['welcome'])
-  loop do
-    current_deck = deck.shuffle
-    player_hand = []
-    dealer_hand = []
+  current_deck = deck.shuffle
+  player_hand = []
+  dealer_hand = []
 
+  loop do
     prompt(MESSAGES['dealing'])
     deal_starting_hands(player_hand, dealer_hand, current_deck)
     sleep(3)
     display_hand('dealer_one_card', [dealer_hand.first])
-    display_hand('player', player_hand)
 
     turn('Player', player_hand, current_deck)
     break if busted?(player_hand)
     turn('Dealer', dealer_hand, current_deck)
+    break
   end
-  break
+
+  final_hand_values = [value(player_hand), value(dealer_hand)]
+  round_winner = winner(final_hand_values)
+  prompt(MESSAGES['final_score'] % final_hand_values)
+  display_winner(round_winner)
+  break # if not want to play again
 end
