@@ -31,13 +31,19 @@ end
 
 def value(hand)
   total = hand.reduce(0) { |sum, card| sum + DECK_VALUES[card[0]] }
-  ace_handler(hand, total)
+  ace_handler(ace_count(hand), total)
 end
 
-def ace_handler(hand, total)
-  return total if hand.none? { |card| card[0] == 'A' }
+def ace_count(hand)
+  hand.count { |card| card[0] == 'A' }
+end
 
-  total <= 21 ? total : (total - 10)
+def ace_handler(ace_count, total)
+  ace_count.times do
+    break if total <= 21
+    total -= 10
+  end
+  total
 end
 
 def busted?(hand)
@@ -88,8 +94,8 @@ end
 
 def display_winner(participant)
   case participant
-  when 'Player' then prompt(MESSAGES['player_winner'])
-  when 'Dealer' then prompt(MESSAGES['dealer_winner'])
+  when 'Player' then prompt(MESSAGES['player_won'])
+  when 'Dealer' then prompt(MESSAGES['dealer_won'])
   else prompt(MESSAGES['tie'])
   end
 end
@@ -101,6 +107,7 @@ def play_again?
 end
 
 loop do
+  system('clear')
   prompt(MESSAGES['welcome'])
   current_deck = deck.shuffle
   player_hand = []
