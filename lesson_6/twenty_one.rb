@@ -2,9 +2,9 @@ require 'yaml'
 
 SUITS = [' of Hearts', ' of Spades', ' of Diamonds', ' of Clubs']
 CARD_NAMES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King', 'Ace']
-DECK_VALUES = {'2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7,
-               '8' => 8, '9' => 9, '1' => 10, 'J' => 10, 'Q' => 10,
-               'K' => 10, 'A' => 11 }
+DECK_VALUES = { '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7,
+                '8' => 8, '9' => 9, '1' => 10, 'J' => 10, 'Q' => 10,
+                'K' => 10, 'A' => 11 }
 MESSAGES = YAML.load_file('msgs.yml')
 
 def prompt(message)
@@ -65,14 +65,14 @@ end
 def player_decision
   loop do
     prompt(MESSAGES['player_decision'])
-    decision = gets.chomp
+    decision = gets.chomp.downcase
     break decision if decision_valid?(decision)
     prompt(MESSAGES['invalid_decision'])
   end
 end
 
 def decision_valid?(decision)
-  ['hit', 'stay'].include?(decision.downcase)
+  ['hit', 'stay'].include?(decision)
 end
 
 def dealer_decision(hand)
@@ -80,15 +80,24 @@ def dealer_decision(hand)
 end
 
 def winner(hands)
-  hands.map! { |hand| hand > 21 ? 0 : hand }
+  hands = hands.map { |hand| hand > 21 ? 0 : hand }
+  return 'Tie' if hands.first == hands.last
+
   hands.first > hands.last ? 'Player' : 'Dealer'
 end
 
 def display_winner(participant)
-  if participant == 'Player'
-    prompt(MESSAGES['player_winner'])
-  else prompt(MESSAGES['dealer_winner'])
+  case participant
+  when 'Player' then prompt(MESSAGES['player_winner'])
+  when 'Dealer' then prompt(MESSAGES['dealer_winner'])
+  else prompt(MESSAGES['tie'])
   end
+end
+
+def play_again?
+  prompt(MESSAGES['play_again'])
+  answer = gets.chomp.downcase
+  ['yes', 'y'].include?(answer)
 end
 
 loop do
@@ -105,13 +114,13 @@ loop do
 
     turn('Player', player_hand, current_deck)
     break if busted?(player_hand)
+    system('clear')
     turn('Dealer', dealer_hand, current_deck)
     break
   end
 
   final_hand_values = [value(player_hand), value(dealer_hand)]
-  round_winner = winner(final_hand_values)
   prompt(MESSAGES['final_score'] % final_hand_values)
-  display_winner(round_winner)
-  break # if not want to play again
+  display_winner(winner(final_hand_values))
+  break prompt(MESSAGES['farewell']) if !play_again?
 end
